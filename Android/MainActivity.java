@@ -10,9 +10,6 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,31 +28,31 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Logged In", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
     }
 
     public void LogIn(View view) {
-        Intent intent = new Intent(this, displayMessage.class);
+        Intent intent = new Intent(this, DisplayMessage.class);
 
         EditText firstname = (EditText) findViewById(R.id.firstName);
         EditText lastname = (EditText) findViewById(R.id.lastName);
-//        EditText messagesent = (EditText) findViewById(R.id.message);
+        EditText messagesent = (EditText) findViewById(R.id.message);
 
         publicFirstName = firstname.getText().toString();
         publicLastName = lastname.getText().toString();
-//        publicMessage = messagesent.getText().toString();
+        publicMessage = messagesent.getText().toString();
 
         ArrayList<String> text = new ArrayList<String>();
         text.add(publicFirstName);
         text.add(publicLastName);
-//        text.add(publicMessage);
+        text.add(publicMessage);
 
         intent.putExtra(EXTRA_MESSAGE,text);
         startActivity(intent);
