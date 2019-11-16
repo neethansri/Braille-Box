@@ -18,6 +18,15 @@ def getNotSent(connection):
         print (row)
     return;
 
+def messageIdGenerator(connection)
+	sql = ''' SELECT messageId FROM message_Info 
+		  WHERE messageId = (SELECT MAX(messageId) FROM message_Info '''
+	curr  = connection.cursor()
+	cur.execute(sql)
+	idValue = cur.fetchone()[0]
+	idValue = idValue + 1;
+	return idValue
+
 def addMessageInfo(connection,tableValue):
     
     sql = ''' INSERT INTO message_Info(message,messageSent,messageId)
@@ -65,7 +74,8 @@ def main():
     conn = server()
     with conn:
         string = 'test5'
-        message = (string,0,4)
+	idValue = messageIdGenerator(conn)
+        message = (string,0,idValue)
         length = len(string)
         messageId = addMessageInfo(conn,message)
         
