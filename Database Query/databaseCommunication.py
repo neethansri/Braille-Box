@@ -50,6 +50,16 @@ def updateSentStatus(connection,idValue):
     
     cur = connection.cursor()
     cur.execute(sql,(idValue,))
+
+def getLengthOfMessage(connection,idValue):
+	sql = ''' SELECT * FROM Message_Info
+		  WHERE messageId = ? '''
+
+	cur = connection.cursor()
+	cur.execute(sql,(idValue,))
+	strings = cur.fetchone()[0]
+	length = len(strings)
+	print(length)
     
 def main():
     conn = server()
@@ -67,6 +77,8 @@ def main():
         
         #getNotSent(conn)
         updateSentStatus(conn,0)
+
+	getLengthOfMessage(conn,0)
     conn.close()
 
 
