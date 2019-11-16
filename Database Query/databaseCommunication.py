@@ -20,7 +20,7 @@ def getNotSent(connection):
 
 def messageIdGenerator(connection)
 	sql = ''' SELECT messageId FROM message_Info 
-		  WHERE messageId = (SELECT MAX(messageId) FROM message_Info '''
+		  WHERE messageId = SELECT MAX(messageId) FROM message_Info '''
 	curr  = connection.cursor()
 	cur.execute(sql)
 	idValue = cur.fetchone()[0]
@@ -35,7 +35,11 @@ def addMessageInfo(connection,tableValue):
     cur = connection.cursor()
     cur.execute(sql,tableValue)
     return cur.lastrowid #used for connecting tables
-    
+
+def getMessage(connection, message):
+	data = (message,0,messageIdGenerator(connection))
+	addMessageInfo(connection, data)
+	
 def addMessageContainer(connection,tableValue):
     sql = ''' INSERT INTO message_Container(lengthOfMessage,receivedTimeStamp,finishedTimeStamp,userId,messageId)
 
@@ -73,9 +77,10 @@ def getLengthOfMessage(connection,idValue):
 def main():
     conn = server()
     with conn:
-        string = 'test5'
-	idValue = messageIdGenerator(conn)
-        message = (string,0,idValue)
+        string = 'test5' #to be removed later and expect app input for the messages, used for test purposes atm
+	#idValue = messageIdGenerator(conn)
+        #message = (string,0,idValue)
+	getMessage(connection,string)
         length = len(string)
         messageId = addMessageInfo(conn,message)
         
