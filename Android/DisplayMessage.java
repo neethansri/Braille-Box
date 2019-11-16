@@ -20,7 +20,7 @@ public class DisplayMessage extends AppCompatActivity {
 //        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 
         ArrayList<String> message = intent.getStringArrayListExtra(MainActivity.EXTRA_MESSAGE);
-        String display = "First Name: "+message.get(0)+"\n"+"Last Name: "+message.get(1)+"\n"+"Message Sent: "+message.get(2);
+        String display = "First Name: "+message.get(0)+"\n"+"Last Name: "+message.get(1)+"\n"+"IP Address: "+message.get(3)+"\n"+"Port Number: "+message.get(4)+"\n"+"Message Sent: "+message.get(2);
 
         // Capture the layout's TextView and set the string as its text
         TextView textView = findViewById(R.id.textView);
