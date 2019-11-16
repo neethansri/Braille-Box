@@ -19,8 +19,12 @@ public class JSONSender extends Thread {
 			if (message.length()==0) break;
 			byte [] data = message.getBytes() ;
 			
-			DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName("127.0.0.1"), 1000 ) ;
+			DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName("127.0.0.1"), Integer.parseInt(args[0]) ) ;
 			socket1.send( packet );
+			
+			packet = new DatagramPacket(new byte[200], 200);
+			socket1.receive(packet);
+			System.out.println(new String(packet.getData(), 0, packet.getLength()));
 		}
 		scanner.close();
 		socket1.close();
