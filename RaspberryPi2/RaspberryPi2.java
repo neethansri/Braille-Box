@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -108,8 +109,17 @@ public class RaspberryPi2 {
 		this.flag = "1";
 		String portDescriptor = "COM5";
 		// Access the flag
-		SerialPort.getCommPort(portDescriptor);
-
+		SerialPort serial = SerialPort.getCommPort(portDescriptor);
+		serial.openPort();
+		InputStream in = serial.getInputStream();
+		try
+		{
+		   for (int j = 0; j < 1000; ++j)
+		      System.out.print((char)in.read());
+		   in.close();
+		} catch (Exception e) { e.printStackTrace(); }
+		serial.closePort();
+		
 		if (Integer.parseInt(this.flag) == 1) {
 			// send this.currentChars[index]
 			// index++;
