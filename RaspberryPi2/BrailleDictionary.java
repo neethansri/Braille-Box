@@ -38,6 +38,13 @@ public class BrailleDictionary {
 		brailleDict.put('y', "111101");
 		brailleDict.put('z', "110101");
 		brailleDict.put('#', "110101");
+		brailleDict.put(',', "000010");
+		brailleDict.put(';', "000110");
+		brailleDict.put(':', "010010");
+		brailleDict.put('.', "110010");
+		brailleDict.put('?', "100110");
+		brailleDict.put(''', "000100");
+		
 		
 		//ADD SPECIAL CHARS
 		
