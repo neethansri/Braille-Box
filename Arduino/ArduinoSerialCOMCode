@@ -6,6 +6,9 @@ const int solenoidPIN3 = 6;
 const int solenoidPIN4 = 7;
 const int solenoidPIN5 = 8;
 const int solenoidPIN6 = 9;
+char rx_byte = 0;
+String rx_str = "";
+int result;
 
 
 void setup() {
@@ -23,4 +26,24 @@ void setup() {
 }
 
 void loop(){
+int flag;
+  if (Serial.available() > 0) {
+    rx_byte = Serial.read();
+
+    if ((rx_byte >= '0') && (rx_byte <= '9')) {
+      rx_str += rx_byte;
+    }
+    else {
+      continue;
+    }
+  } else {
+    result = rx_str.toInt();
+    num1 = result % 10;
+    num2 = result % 100;
+    num3 = result % 1000;
+    num4 = result % 10000;
+    num5 = result % 100000;
+    num6 = result % 1000000;
+    num7 = result % 10000000;
+    int myBits[7] = {num1, num2, num3, num4, num5, num6, num7};
 }
