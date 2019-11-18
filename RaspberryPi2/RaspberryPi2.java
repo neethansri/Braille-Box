@@ -41,8 +41,7 @@ public class RaspberryPi2 {
 	        socket.close();
 	        
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
 
 		//Check if something was actually sent
@@ -52,7 +51,7 @@ public class RaspberryPi2 {
 		
 		//Transfer received data to character array
 		currentChars = received.toCharArray(); 
-	    
+	    	
 		
 
 		
@@ -83,7 +82,7 @@ public class RaspberryPi2 {
 				
 				
 		        socket.send(packet);
-		        socket.close();
+		        socket.close(); 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -109,7 +108,7 @@ public class RaspberryPi2 {
 	public void sendNextChar(boolean lastChar) {
 		
 		//Solan code
-		
+		//if flag = 1(send the character)
 		index++;
 	}
 	
@@ -118,11 +117,11 @@ public class RaspberryPi2 {
 	}
 	
 	/**
-	 * Find out if the next character is the last one
+	 * Find out if the previous character was the last one
 	 * @return True if it is the last one, false otherwise
 	 */
 	public boolean isLastChar() {
-		return index == currentChars.length;
+		return index >= currentChars.length;
 	}
 	
 	
@@ -149,11 +148,31 @@ public class RaspberryPi2 {
 		}
 		*/
 		while(true) {
+			
+		//Create pi object with specific port
 		RaspberryPi2 pi = new RaspberryPi2(1002);
+		
+		//Receive the characters
 		System.out.println("Receiving characters");
 		boolean check = pi.receiveChars();
 		System.out.println(pi.getCharArray());
+		
+		//Send the result to the server Pi
 		pi.sendResult(check);
+		
+		if(check) {
+			int count = 0;
+			
+			while(!pi.isLastChar()) {
+				//Check for Arduino input (1 or 0)
+				pi.sendNextChar(false);
+				System.out.println(count);
+				count++;
+			}
+			
+			pi.sendNextChar(true);
+		}
+		
 		}
 		
 		
