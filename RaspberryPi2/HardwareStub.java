@@ -5,6 +5,11 @@ import java.util.Scanner;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+/**
+ * HardwareStub is an extension of RaspberryPi2 made to simulate the hardware components
+ * @author idirz
+ *
+ */
 public class HardwareStub extends RaspberryPi2{
 	
 	public HardwareStub(int port) {
@@ -27,14 +32,19 @@ public class HardwareStub extends RaspberryPi2{
 	
 	public static void main(String[] args) {
 
+		//Simulate input from button sensors
 		int[] input = new int[] {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1};
 		int inputIndex = 0;
 		Scanner scanner = new Scanner(System.in);
+
+		System.out.println("Specify port number:");
+		int port = Integer.parseInt(scanner.nextLine());
+		scanner.close();
 		
 		while (true) {
 
 			// Create pi object with specific port
-			HardwareStub pi = new HardwareStub(1002);
+			HardwareStub pi = new HardwareStub(port);
 
 			// Receive the characters
 			System.out.println("Receiving characters");
@@ -57,6 +67,6 @@ public class HardwareStub extends RaspberryPi2{
 			inputIndex = 0;
 
 		}
-
+		
 	}
 }

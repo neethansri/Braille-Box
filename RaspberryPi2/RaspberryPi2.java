@@ -23,6 +23,7 @@ public class RaspberryPi2 {
 	private InetAddress serverAddress; //Address of the server pi
 	private int serverPort; //Port of the server pi
 	private String flag;
+	private static final int MAX_SIZE = 300;
 
 
 	public RaspberryPi2(int port, int index) {
@@ -47,7 +48,7 @@ public class RaspberryPi2 {
 
 		try {
 			DatagramSocket socket = new DatagramSocket(port);
-			DatagramPacket packet = new DatagramPacket(new byte[300], 300);
+			DatagramPacket packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
 
 			socket.receive(packet);
 			serverAddress = packet.getAddress();
@@ -97,17 +98,18 @@ public class RaspberryPi2 {
 	 */
 	public void sendResult(boolean validChar) {
 
+		//Convert boolean to bytes
 		byte[] data = String.valueOf(validChar).getBytes();
 
 		DatagramSocket socket;
 		try {
+			//Create Packet with the address and port stored from receival
 			socket = new DatagramSocket(port);
 			DatagramPacket packet = new DatagramPacket(data, data.length, serverAddress, serverPort);
 
 			socket.send(packet);
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -124,6 +126,7 @@ public class RaspberryPi2 {
 			return BRAILLE_CHART.getBraille(c);
 		}
 		else {
+			//If character is invalid, just display empty char
 			return BRAILLE_CHART.getBraille(' ');
 		}
 	}
@@ -134,8 +137,7 @@ public class RaspberryPi2 {
 	 * @param lastChar if the character the last one in the text
 	 */
 	public void sendNextChar(int buttonFlag) {
-		System.out.println("bonjout");
-		this.flag = "1";
+
 		String portDescriptor = "COM5";
 		// Access the flag
 		SerialPort serial = SerialPort.getCommPort(portDescriptor);
@@ -149,10 +151,12 @@ public class RaspberryPi2 {
 			// index++;
 		}
 
+		//Increment the index for the next character
 		index++;
 	}
 
 	public char[] getCharArray() {
+		//Return null if array was not initialized or is empty
 		if(this.currentChars == null) {
 			return null;
 		}
@@ -168,6 +172,7 @@ public class RaspberryPi2 {
 	 * @return True if it is the last one, false otherwise
 	 */
 	public boolean isLastChar() {
+		//Compare index position to the size of the character array
 		return index >= currentChars.length;
 	}
 
@@ -186,18 +191,17 @@ public class RaspberryPi2 {
 			boolean check = pi.isProperPacket(msg);
 
 			if (check) {
-				// int count = 0;
 
 				while (!pi.isLastChar()) {
 					// Check for Arduino input (1 or 0)
 
 					pi.sendNextChar(1);
-					// System.out.println(count);
-					// count++;
+
 				}
 
 				pi.sendNextChar(1);
 			}
+			pi.index = 0;
 
 		}
 
