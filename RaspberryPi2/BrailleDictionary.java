@@ -1,3 +1,4 @@
+package model;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,15 +39,20 @@ public class BrailleDictionary {
 		brailleDict.put('y', "111101");
 		brailleDict.put('z', "110101");
 		brailleDict.put('#', "110101");
-		brailleDict.put(',', "000010");
-		brailleDict.put(';', "000110");
-		brailleDict.put(':', "010010");
-		brailleDict.put('.', "110010");
-		brailleDict.put('?', "100110");
-		brailleDict.put('!', "010110");
-		brailleDict.put(''', "000100");
-		brailleDict.put('-', "100100");
 		
+		//ADD SPECIAL CHARS
+		
+		
+//		integerDict.put(Integer.valueOf(1), "000001");
+//		integerDict.put(Integer.valueOf(2), "000011");
+//		integerDict.put(Integer.valueOf(3), "001001");
+//		integerDict.put(Integer.valueOf(4), "011001");
+//		integerDict.put(Integer.valueOf(5), "010001");
+//		integerDict.put(Integer.valueOf(6), "001011");
+//		integerDict.put(Integer.valueOf(7), "011011");
+//		integerDict.put(Integer.valueOf(8), "010011");
+//		integerDict.put(Integer.valueOf(9), "001010");
+//		integerDict.put(Integer.valueOf(0), "011010");
 
 	}
 	

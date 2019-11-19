@@ -1,3 +1,4 @@
+package model;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,9 +23,9 @@ public class JSONSender extends Thread {
 			DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName("127.0.0.1"), Integer.parseInt(args[0]) ) ;
 			socket1.send( packet );
 			
-			packet = new DatagramPacket(new byte[200], 200);
-			socket1.receive(packet);
-			System.out.println(new String(packet.getData(), 0, packet.getLength()));
+//			packet = new DatagramPacket(new byte[200], 200);
+//			socket1.receive(packet);
+//			System.out.println(new String(packet.getData(), 0, packet.getLength()));
 		}
 		scanner.close();
 		socket1.close();
