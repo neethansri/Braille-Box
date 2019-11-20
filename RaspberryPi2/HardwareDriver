@@ -1,0 +1,34 @@
+import serial
+import time
+ser = serial.Serial("COM5", 9600)
+time.sleep(1)
+s = ser.read()
+s = s.decode()
+count = 0
+test = ["101010","111111","011010","100111","010101"]
+while 1:
+                
+               if s == "1":
+              
+                              time.sleep(2)
+                              print(s)                                                
+                              ser.write(test[count].encode()) 
+                              count = count + 1
+                           
+               if count == 4:
+                              count = 0               
+               if s == "0":
+                              time.sleep(4)
+                              print(s)
+
+               while ser.in_waiting:
+                              s = ser.read()  
+                              s = s.decode()                                
+
+
+
+    
+
+
+
+    
