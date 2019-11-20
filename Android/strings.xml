@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Braille Box</string>
+    <string name="action_settings">Settings</string>
+    <string name="first_name">Enter First Name</string>
+    <string name="last_name">Enter Last Name</string>
+    <string name="ip">Enter ip Address</string>
+    <string name="port">Enter Port Number</string>
+    <string name="Message">Enter Message, 50 Character Limit</string>
+    <string name="log_in">Log In</string>
+    <string name="send">Send</string>
+</resources>
