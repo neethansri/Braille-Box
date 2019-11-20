@@ -1,23 +1,32 @@
-package com.example.test_helloworld;
+package com.example.braillebox;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
+import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXTRA_MESSAGE = "com.example.myfirstapp.Message";
+    EditText firstname, lastname, messagesent, ip, port;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,54 +34,59 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Logged In", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+//        Thread myThread = new Thread(new MyServerThread());
+//        myThread.start();
     }
 
-    public void LogIn(View view) {
-        Intent intent = new Intent(this, DisplayMessage.class);
+//    class MyServerThread implements Runnable{
+//        Socket socket;
+//        ServerSocket serverSocket;
+//        InputStreamReader inputStreamReader;
+//        BufferedReader bufferReader;
+//        String message;
+//        Handler handler = new Handler();
+//        @Override
+//        public void run() {
+//            try {
+//                serverSocket = new ServerSocket(1001);
+//                while(true) {
+//                    socket = serverSocket.accept();
+//                    inputStreamReader = new InputStreamReader(socket.getInputStream());
+//                    bufferReader = new BufferedReader(inputStreamReader);
+//                    message = bufferReader.readLine();
+//
+//                    handler.post(new Runnable(){
+//
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//            }catch(IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+    public void send(View v){
 
-        EditText firstname = (EditText) findViewById(R.id.firstName);
-        EditText lastname = (EditText) findViewById(R.id.lastName);
-        EditText messagesent = (EditText) findViewById(R.id.message);
-        EditText ip = (EditText) findViewById(R.id.ip);
-        EditText port = (EditText) findViewById(R.id.port);
-
-        String s1 = firstname.getText().toString();
-        String s2 = lastname.getText().toString();
-        String s3 = messagesent.getText().toString();
-        String s4 = ip.getText().toString();
-        String s5 = port.getText().toString();
+        firstname = (EditText) findViewById(R.id.firstName);
+        lastname = (EditText) findViewById(R.id.lastName);
+        messagesent = (EditText) findViewById(R.id.message);
+        ip = (EditText) findViewById(R.id.ip);
+        port = (EditText) findViewById(R.id.port);
 
 
         ArrayList<String> text = new ArrayList<String>();
-        text.add(s1);
-        text.add(s2);
-        text.add(s3);
-        text.add(s4);
-        text.add(s5);
 
-        if (s3.length()!=0) {
-            try {
-                DatagramSocket socket1 = new DatagramSocket();
-                byte[] data = s3.getBytes();
-                DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName(s4), Integer.getInteger(s5));
-                socket1.send(packet);
-                packet = new DatagramPacket(new byte[200], 200);
-                socket1.receive(packet);
-                socket1.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        intent.putExtra(EXTRA_MESSAGE,text);
-        startActivity(intent);
+        text.add(firstname.getText().toString());
+        text.add(lastname.getText().toString());
+        text.add(messagesent.getText().toString());
+        text.add(ip.getText().toString());
+        text.add(port.getText().toString());
+
+        MessageSender messagesender = new MessageSender();
+        messagesender.execute(text);
     }
 
     @Override
