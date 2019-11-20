@@ -2,15 +2,16 @@ package model;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * BrailleDictionary is a class that contains the braille representation of characters, written in 6-bit strings
+ * @author idirz
+ *
+ */
 public class BrailleDictionary {
 	private static Map<Character, String> brailleDict;
-//	private static Map<Integer, String> integerDict;
-//	private boolean intFlag;
 	
 	public BrailleDictionary() {
 		brailleDict = new HashMap<Character, String>();
-//		integerDict = new HashMap<Integer, String>();
-//		intFlag = false;
 		brailleDict.put(' ', "000000");
 		brailleDict.put('a', "000001");
 		brailleDict.put('b', "000011");

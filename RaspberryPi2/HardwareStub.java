@@ -21,7 +21,7 @@ public class HardwareStub extends RaspberryPi2{
 		
 		if (buttonFlag == 1) {
 			char c = this.currentChars[this.index];
-			System.out.println(this.convertCharToBraille(c));
+			System.out.println(c + ": " + this.convertCharToBraille(c));
 			index++;
 		}
 		else {
