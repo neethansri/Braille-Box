@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -23,16 +24,11 @@ public class Receiver {
 		
 		try {
 			serverSocket = new ServerSocket(1001);
-//			socket2 = new Socket("10.0.2.16", 1001);
-//			printWriter = new PrintWriter(socket2.getOutputStream());
-//			printWriter.write("Message Received");
-//			printWriter.flush();
-//			printWriter.close();
-//			socket2.close();
 			
 			int count = 0;
 			PrintStream history = new PrintStream(new File("C:\\Users\\mohd-\\Desktop\\history.txt"));
 			while(true) {
+				
 				socket = serverSocket.accept();
 				inputStreamReader = new InputStreamReader(socket.getInputStream());
 				bufferReader = new BufferedReader(inputStreamReader);
@@ -54,6 +50,11 @@ public class Receiver {
 		        // Use stored value for output stream 
 		        System.setOut(console); 
 		        System.out.println("["+count+"]"+message);
+		        
+//		        printWriter = new PrintWriter(socket.getOutputStream());
+//				printWriter.write("Message Received");
+//				printWriter.flush();
+//				printWriter.close();
 
 			}
 			
