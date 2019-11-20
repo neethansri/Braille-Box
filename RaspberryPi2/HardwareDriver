@@ -1,27 +1,29 @@
 import serial
 import time
-ser = serial.Serial("COM5", 9600)
+ser = serial.Serial("COM5", 9600) #Set serial connection port to that of the Arduino
 time.sleep(1)
-s = ser.read()
-s = s.decode()
+s = ser.read() # Read from Arduino and store byte in variable s
+s = s.decode() # Decode s into string variable
 count = 0
-test = ["101010","111111","011010","100111","010101"]
+test = ["101010","111111","011010","100111","010101"] # Create array for inputted 6 bit controls 
 while 1:
                 
                if s == "1":
               
                               time.sleep(2)
                               print(s)                                                
-                              ser.write(test[count].encode()) 
+                              ser.write(test[count].encode()) #Write into the serial port the 6 bit controls
                               count = count + 1
                            
-               if count == 4:
+               if count == 5:
                               count = 0               
                if s == "0":
+                #If flag sent from the Arduino is 0
                               time.sleep(4)
-                              print(s)
+                              print(s)#Print 0 no solenoid controls
 
                while ser.in_waiting:
+               #Reading from Arduino
                               s = ser.read()  
                               s = s.decode()                                
 
