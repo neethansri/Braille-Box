@@ -36,5 +36,15 @@ buttonstate2 = digitalRead(buttonPin2);
     char num4 = rx_str.charAt(3);
     char num5 = rx_str.charAt(4);
     char num6 = rx_str.charAt(5);
-
-}
+ buttonstate2 = digitalRead(BUTTON2);
+    if (num1 == '1') {
+      digitalWrite(solenoidPIN2, HIGH);
+    } else {
+      digitalWrite(solenoidPIN2, LOW);
+    }
+    if (num2 == '1') {
+      digitalWrite(solenoidPIN3, HIGH);
+    } else {
+      digitalWrite(solenoidPIN3, LOW);
+    }
+    }
