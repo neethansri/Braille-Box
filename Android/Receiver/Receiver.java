@@ -1,12 +1,14 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import org.json.simple.JSONObject;
+
 
 public class Receiver {
 	
@@ -15,9 +17,6 @@ public class Receiver {
 	static InputStreamReader inputStreamReader;
 	static BufferedReader bufferReader;
 	static String message;
-//	static ServerSocket serverSocket2;
-//	static Socket socket2;
-//	static PrintWriter printWriter;
 	
 
 	public static void main(String[] args) {
@@ -27,6 +26,7 @@ public class Receiver {
 			
 			int count = 0;
 			PrintStream history = new PrintStream(new File("C:\\Users\\mohd-\\Desktop\\history.txt"));
+
 			while(true) {
 				
 				socket = serverSocket.accept();
@@ -38,6 +38,19 @@ public class Receiver {
 				PrintStream pi = new PrintStream(new File("C:\\Users\\mohd-\\Desktop\\pi.txt"));
 				// Creating a File object that represents the disk file.  
 		        PrintStream console = System.out; 
+		        
+		        // check if the same person sends the same message
+		        String list[] = message.split(",");
+		        JSONObject obj = new JSONObject();
+		        for (String i : list){
+		        	String temp[] = i.split(":");
+		        	obj.put(temp[0], temp[1]);
+		        }
+		        FileWriter fileWriter = new FileWriter("C:\\Users\\mohd-\\Desktop\\JSONBox.JSON", true); //Set true for append mode
+		        PrintWriter pw = new PrintWriter(fileWriter);
+		        pw.write(obj.toJSONString()+"\n"); 
+		        pw.flush();
+		        pw.close();
 		        
 		        // Assign pi to output stream 
 		        System.setOut(pi);
@@ -51,10 +64,6 @@ public class Receiver {
 		        System.setOut(console); 
 		        System.out.println("["+count+"]"+message);
 		        
-//		        printWriter = new PrintWriter(socket.getOutputStream());
-//				printWriter.write("Message Received");
-//				printWriter.flush();
-//				printWriter.close();
 
 			}
 			
