@@ -47,4 +47,31 @@ buttonstate2 = digitalRead(buttonPin2);
     } else {
       digitalWrite(solenoidPIN3, LOW);
     }
+     if (num3 == '1') {
+      digitalWrite(solenoidPIN, HIGH);
+    } else {
+      digitalWrite(solenoidPIN, LOW);
     }
+    if (num4 == '1') {
+      digitalWrite(solenoidPIN4, HIGH);
+    } else {
+      digitalWrite(solenoidPIN4, LOW);
+    }
+    if (num5 == '1') {
+      digitalWrite(solenoidPIN5, HIGH);
+    } else {
+      digitalWrite(solenoidPIN5, LOW);
+    }
+    if (num6 == '1') {
+      digitalWrite(solenoidPIN6, HIGH);
+    } else {
+      digitalWrite(solenoidPIN6, LOW);
+    }
+
+
+    if (buttonstate2 == HIGH) {
+      flag = 0;
+      Serial.write(48);
+    }
+  }
+
