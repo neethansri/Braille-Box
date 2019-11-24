@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import datetime
 import socket, sys, time
 
 class DB():
@@ -17,15 +18,16 @@ class DB():
                     messageId integer NOT NULL PRIMARY KEY
                     ); '''
         # Creates the message_Container table with the following columns"""
-       # sql2 = ''' CREATE TABLE IF NOT EXISTS message_Container (
-                   # lengthOfMessage integer NOT NULL,
-                   # receivedTimeStamp Date NOT NULL,
-                   # finishedTimeStamp Date NOT NULL,
-                   #  messageId integer NOT NULL,
-                   # FOREIGN KEY(messageId) REFERENCES message_Info (messageId)
-                   # ); '''
+        sql2 = ''' CREATE TABLE IF NOT EXISTS message_Container (
+                     lengthOfMessage integer NOT NULL,
+                     receivedTimeStamp Date NOT NULL,
+                     messageId integer NOT NULL,
+                     firstName TEXT NOT NULL,
+                     lastName TEXT NOT NULL,
+                     FOREIGN KEY(messageId) REFERENCES message_Info (messageId)
+                     );'''
         # Creates the message_Info table with the following columns"""
-       # sql3 = ''' CREATE TABLE IF NOT EXISTS User_Info (
+        #sql3 = ''' CREATE TABLE IF NOT EXISTS User_Info (
                     #firstName text NOT NULL,
                     #lastName text NOT NULL,
                     #userId integer NOT NULL,
@@ -36,10 +38,10 @@ class DB():
             c = conn.cursor()
             c.execute(sql)
             conn.commit()
-            #c.execute(sql2)
-            #conn.commit()
-            #c.execute(sql3)
-           # conn.commit()
+            c.execute(sql2)
+            conn.commit()
+            
+            conn.close()
         except Error as e:
             print(e)
 
@@ -51,7 +53,7 @@ class DB():
         """
         connection = None
         try:
-            connection = sqlite3.connect('mock.db') # creates the connction object for the db
+            connection = sqlite3.connect('messageDatabase.db') # creates the connction object for the db
         except Error as e:
             print(e)
 
@@ -84,20 +86,23 @@ class DB():
         
         idValue = cur.fetchone()[0]
         if(idValue == None):
-            idvValue = 0
+            idvValue = 1
         else:
             idValue = idValue + 1
         return idValue
+    
     @staticmethod
     def parsejson():
         with open('data.json','r')as f:
             dataVals = json.load(f)
             
         for val in dataVals:
-            message = val['message']
-            Sent = val['messageSent']
-            msgid = val['messageId']
-            packet = (message,Sent,msgid)
+            ipaddress = val['IP Address']
+            firstName = val['First Name']
+            lastName = val['Last Name']
+            message = val['Message Sent']
+            port = val['Port Number']
+            packet = (ipaddress,firstName,lastName,message,port)
         return packet
         
     @staticmethod
@@ -108,46 +113,35 @@ class DB():
         :return: the last row value
         """
         connection = DB.server()
-        sql = ''' INSERT INTO message_Info(message,messageSent,messageId)
+        sql = ''' INSERT INTO message_Info(message,messageSent,userid,messageId)
 
-                VALUES(?,?,?) '''
+                VALUES(?,?,?,?) '''
         cur = connection.cursor()
         cur.execute(sql, tableValue)
         connection.commit()
         connection.close()
-        return "ran"
-        #connection.commit()
-        #return cur.lastrowid  # used for connecting tables
+        print("Message was saved in database")
+        
+        
 
-
+    @staticmethod
     def addMessageContainer(tableValue):
         """Add data to the columns in the message_Container table
         :param conn: Connection object
         :param tableValue: data to be put into the database
         :return: the last row value
         """
-        connection = server()
-        sql = ''' INSERT INTO message_Container(lengthOfMessage,receivedTimeStamp,finishedTimeStamp,userId,messageId)
+        connection = DB.server()
+        sql = ''' INSERT INTO Message_Container(lengthOfMessage,receivedTimeStamp,messageId,firstName,lastName)
 
                 VALUES(?,?,?,?,?) '''
         cur = connection.cursor()
         cur.execute(sql, tableValue)
-        return cur.lastrowid  # used for connecting tables
+        connection.commit()
+        connection.close()
+        
 
-
-    def addUserInfo(connection, tableValue):
-        """Add data to the columns in the user_Info table
-        :param conn: Connection object
-        :param tableValue: data to be put into the database
-        :return: the last row value
-        """
-        sql = ''' INSERT INTO User_Info(firstName,lastName,userId)
-
-                VALUES(?,?,?)'''
-        cur = connection.cursor()
-        cur.execute(sql, tableValue)
-        conn.commit()
-        return cur.lastrowid  # used for connecting tables
+   
 
     @staticmethod
     def updateSentStatus(connection, idValue):
@@ -163,6 +157,7 @@ class DB():
         cur = connection.cursor()
         cur.execute(sql, (idValue,))
         connection.commit()
+        connection.close()
         
     @staticmethod
     def getSentList(conn):
@@ -181,7 +176,7 @@ class DB():
         rows = curs.fetchall()
         return rows
 
-
+    @staticmethod
     def getLengthOfMessage(connection, idValue):
         """get length of specific messages in the message_Container table
         :param conn: Connection object
@@ -196,11 +191,11 @@ class DB():
         cur.execute(sql, (idValue,))
         strings = cur.fetchone()[0]
         length = len(strings)
-        print(length)
+        return length
     
     @staticmethod
     def deleteTable(conn):
-        sql = ''' DELETE FROM message_Info '''
+        sql = ''' DROP TABLE message_Info '''
         cur = conn.cursor()
         cur.execute(sql)
         conn.commit()
@@ -211,6 +206,8 @@ class DB():
 
 
     def receiveMessage():
+        #change later
+        
         global hostAddress
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         server_address = ('', port)
@@ -227,11 +224,14 @@ class DB():
 
 
     def sendResult(result):
+        # change later
+        
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         global hostAddress
         print(hostAddress)
         data = str(result)
         s.sendto(data.encode('utf-8'), hostAddress)
+        
     @staticmethod
     def parseText(message):
         message = message.lower()
@@ -259,17 +259,39 @@ class DB():
         
         return formattedArray
 
-#def main():
-        f#oo = DB()
-        #test = foo.parseText('test123test')
-        #print(test)
-        #conn = foo.server()
-        #p = ('test',0,4)
-        #foo.addMessageInfo(p)
-       # foo.deleteTable(conn)
-        
-#if __name__=='__main__':
-  #  main()
+def main():
+        foo = DB()
+        conn = foo.server()
+        cur = conn.cursor()
+        while(true):
+            with open('data.json','r')as f:
+            dataVals = json.load(f)
+            packet = ()
+            for val in dataVals:
+                ipaddress = val['IP Address']
+                firstName = val['First Name']
+                lastName = val['Last Name']
+                message = val['Message Sent']
+                port = val['Port Number']
+                packet = (ipaddress,firstName,lastName,message,port)
+                
+                idV = messageIdGenerator(conn)
+                messagedb = (packet[4],0,idV)
+                time = datetime.datetime.now().strftime("c")
+                lengthMsg = getLengthOfMessage(conn,idV)
+                
+                addMessageInfo(messagedb)
+                addMessageContainer(lengthMsg,time,idV,packet[1],packet[2])
+               
+                result = parseText(packet[4])
+                sendResult(result)
+            
+            
+            
+                
+            
+if __name__=='__main__':
+        main()
 
 
 
