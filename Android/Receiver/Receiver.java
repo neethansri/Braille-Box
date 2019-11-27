@@ -26,8 +26,8 @@ public class Receiver {
 			serverSocket = new ServerSocket(1001);
 			
 			int count = 0;
-			PrintStream history = new PrintStream(new File("E:\\Users\\Moe\\Desktop\\history.txt"));
-			FileWriter fileWriter = new FileWriter("E:\\Users\\Moe\\Desktop\\JSONBox.JSON");
+			PrintStream history = new PrintStream(new File("C:\\Users\\mohd-\\Desktop\\history.txt"));
+			FileWriter fileWriter = new FileWriter("C:\\Users\\mohd-\\Desktop\\JSONBox.JSON");
 			oldMessage = "";
 			while(true) {
 				
@@ -38,18 +38,21 @@ public class Receiver {
 				if (!(oldMessage.equals(newMessage))) {
 					System.out.println("Receiving characters");
 					count++;
-					PrintStream pi = new PrintStream(new File("E:\\Users\\Moe\\Desktop\\pi.txt"));
+					PrintStream pi = new PrintStream(new File("C:\\Users\\mohd-\\Desktop\\pi.txt"));
 					// Creating a File object that represents the disk file.  
 			        PrintStream console = System.out; 
 			        
 			        // check if the same person sends the same message
 			        String list[] = newMessage.split(",");
 			        JSONObject obj = new JSONObject();
+			        
 			        for (String i : list){
 			        	String temp[] = i.split(":");
 			        	obj.put(temp[0], temp[1]);
+			        	
 			        }
-			        fileWriter = new FileWriter("E:\\Users\\Moe\\Desktop\\JSONBox.JSON", true); //Set true for append mode
+			        
+			        fileWriter = new FileWriter("C:\\Users\\mohd-\\Desktop\\JSONBox.JSON", true); //Set true for append mode
 			        PrintWriter pw = new PrintWriter(fileWriter);
 			        pw.write(obj.toJSONString()+"\n"); 
 			        pw.flush();
@@ -71,16 +74,9 @@ public class Receiver {
 				}else {
 					System.out.println("Message was already sent!");
 				}
-
-		        
-
 			}
-			
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-
-
 }

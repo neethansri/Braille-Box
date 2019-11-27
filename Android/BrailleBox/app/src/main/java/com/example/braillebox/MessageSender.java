@@ -2,7 +2,6 @@ package com.example.braillebox;
 
 import android.os.AsyncTask;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -27,7 +26,7 @@ public class MessageSender extends AsyncTask<ArrayList,Void,Void> {
         try {
             socket = new Socket(InetAddress.getByName(list.get(3)), Integer.parseInt(list.get(4)));
             printWriter = new PrintWriter(socket.getOutputStream());
-            printWriter.write("First Name: "+list.get(0)+", Last Name: "+list.get(1)+", IP Address: "+list.get(3)+", Port Number: "+list.get(4)+", Message Sent: "+list.get(2));
+            printWriter.write(list.get(0)+","+list.get(1)+","+list.get(3)+","+list.get(4)+","+list.get(2));
             printWriter.flush();
             printWriter.close();
             socket.close();

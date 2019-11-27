@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 //                    inputStreamReader = new InputStreamReader(socket.getInputStream());
 //                    bufferReader = new BufferedReader(inputStreamReader);
 //                    message = bufferReader.readLine();
+//                    System.out.println(message);
 //
 //                    handler.post(new Runnable(){
 //
@@ -84,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         text.add(messagesent.getText().toString());
         text.add(ip.getText().toString());
         text.add(port.getText().toString());
+
+        Toast.makeText(getApplicationContext(),"Message Received",Toast.LENGTH_SHORT).show();
 
         MessageSender messagesender = new MessageSender();
         messagesender.execute(text);
