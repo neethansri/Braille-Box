@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class JavaSerialCom {
-	static boolean received;
 	static String s = "";
 	static int count = 0;
 	static String[] byteArray = new String[] { "101010", "111111", "101100", "111001" };
@@ -28,27 +27,36 @@ public class JavaSerialCom {
 
 				s = in.nextLine();
 				System.out.println(s);
-				if (s.equals("1")) {
-					try {
-						port.getOutputStream().write(byteArray[count].getBytes());
-						port.getOutputStream().flush();
-						Thread.sleep(5000);
 
-					} catch (IOException | InterruptedException e) {
+				while (true) {
+					if (s.equals("1")) {
+						try {
+							port.getOutputStream().write(byteArray[count].getBytes());
+							port.getOutputStream().flush();
+							Thread.sleep(5000);
 
-						e.printStackTrace();
+						} catch (IOException | InterruptedException e) {
+
+							e.printStackTrace();
+						}
+						System.out.println("Sent Number " + byteArray[count]);
+
+						count++;
 					}
-					System.out.println("Sent Number " + byteArray[count]);
 
-					count++;
+					if (count == 4) {
+						count = 0;
+					}
+
+					while(port.bytesAvailable()>0) {
+						s = in.nextLine();
+						System.out.println(s);
+					}
 				}
-
-				if (count == 4) {
-					count = 0;
-				}
-
 			}
+			}
+
+
 		});
 
-	}
-}
+}}
