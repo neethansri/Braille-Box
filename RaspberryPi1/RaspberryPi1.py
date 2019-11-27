@@ -73,7 +73,7 @@ class DB():
         return rows
 
 
-    def messageIdGenerator(connection):
+    def messageIdGenerator(self,connection):
         """Generates id values for the database 
         :param conn: Connection object
         :return: Id value for new messages
@@ -85,8 +85,9 @@ class DB():
         connection.commit()
         
         idValue = cur.fetchone()[0]
-        if(idValue == None):
-            idvValue = 1
+        print(idValue)
+        if idValue is None:
+            idValue = 1
         else:
             idValue = idValue + 1
         return idValue
@@ -113,9 +114,9 @@ class DB():
         :return: the last row value
         """
         connection = DB.server()
-        sql = ''' INSERT INTO message_Info(message,messageSent,userid,messageId)
+        sql = ''' INSERT INTO message_Info(message,messageSent,messageId)
 
-                VALUES(?,?,?,?) '''
+                VALUES(?,?,?) '''
         cur = connection.cursor()
         cur.execute(sql, tableValue)
         connection.commit()
@@ -177,20 +178,9 @@ class DB():
         return rows
 
     @staticmethod
-    def getLengthOfMessage(connection, idValue):
-        """get length of specific messages in the message_Container table
-        :param conn: Connection object
-        :param idValue: data to be put into the database
-        :return: """
-
-        """sql statement to be executed"""
-        sql = ''' SELECT * FROM Message_Info
-              WHERE messageId = ? '''
-
-        cur = connection.cursor()
-        cur.execute(sql, (idValue,))
-        strings = cur.fetchone()[0]
-        length = len(strings)
+    def getLengthOfMessage(msg):
+        
+        length = len(msg)
         return length
     
     @staticmethod
@@ -200,7 +190,7 @@ class DB():
         cur.execute(sql)
         conn.commit()
         
-    #Varaiables used for communication part of the code"""
+    
     port = 1001
     hostAddress = ''
 
@@ -223,7 +213,7 @@ class DB():
 
 
 
-    def sendResult(result):
+    def sendResult(self,result):
         # change later
         
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -263,29 +253,33 @@ def main():
         foo = DB()
         conn = foo.server()
         cur = conn.cursor()
-        while(true):
-            with open('data.json','r')as f:
-            dataVals = json.load(f)
-            packet = ()
-            for val in dataVals:
-                ipaddress = val['IP Address']
-                firstName = val['First Name']
-                lastName = val['Last Name']
-                message = val['Message Sent']
-                port = val['Port Number']
-                packet = (ipaddress,firstName,lastName,message,port)
-                
-                idV = messageIdGenerator(conn)
-                messagedb = (packet[4],0,idV)
-                time = datetime.datetime.now().strftime("c")
-                lengthMsg = getLengthOfMessage(conn,idV)
-                
-                addMessageInfo(messagedb)
-                addMessageContainer(lengthMsg,time,idV,packet[1],packet[2])
-               
-                result = parseText(packet[4])
-                sendResult(result)
-            
+        while(True):
+            filepath = 'parse.txt'
+            data = None
+            with open(filepath) as fp:
+                for line in fp:
+                        a,b,c,d,e = line.split(',')
+                        firstName = a
+                        lastName = b
+                        ipAddress = c
+                        port = d
+                        msg = e
+             
+                        packet = (firstName,lastName,ipAddress,port,msg)
+                        
+                        idV = foo.messageIdGenerator(conn)
+                        print(idV)
+                        messagedb = (packet[4],0,idV)
+                        time = datetime.datetime.now().strftime("c")
+                        foo.addMessageInfo(messagedb)
+                        lengthMsg = foo.getLengthOfMessage(packet[4])
+                        
+                        
+                        foo.addMessageContainer((lengthMsg,time,idV,packet[0],packet[1]))
+                       
+                        result = foo.parseText(packet[4])
+                        foo.sendResult(result)
+                        fp.close()
             
             
                 
@@ -296,3 +290,4 @@ if __name__=='__main__':
 
 
 
+ 
