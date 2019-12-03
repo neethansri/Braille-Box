@@ -52,23 +52,27 @@ public class RaspberryPi2 {
 	public String receiveChars() {
 		// Receive JSON and store in array
 
-		String received = "";
+			String received = "";
+			
+			DatagramSocket socket = null; 
+			DatagramPacket packet = null; 
 
-		try {
-			DatagramSocket socket = new DatagramSocket(port);
-			DatagramPacket packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
+			try {
+				socket = new DatagramSocket(port);
+				packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
 
-			socket.receive(packet);
-			serverAddress = packet.getAddress();
-			serverPort = packet.getPort();
-			received = new String(packet.getData(), 0, packet.getLength());
-			socket.close();
+				socket.receive(packet);
+				serverAddress = packet.getAddress();
+				serverPort = packet.getPort();
+				received = new String(packet.getData(), 0, packet.getLength());
 
-		} catch (Exception e) {
-			return "";
-		}
-
-		return received;
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				socket.close();
+			}
+			
+			return received;
 
 	}
 
@@ -141,11 +145,8 @@ public class RaspberryPi2 {
 	 * 
 	 * @param lastChar if the character the last one in the text
 	 */
-	public void sendNextChar(int buttonFlag) {
+	public void sendNextChar() {
 
-		String s = "";
-		int count = 0;
-		int i = 0;
 		String[] byteArray = new String[] { "101010", "111111", "101100", "011001" };
 
 		SerialPort port = SerialPort.getCommPort("COM5");
