@@ -1,6 +1,5 @@
+package model;
 
-
-import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,21 +15,25 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * RaspberryPi2 is a class responsible for the operations concerning the client RaspberryPi (RPi2)
+ * RaspberryPi2 is a class responsible for the operations concerning the client
+ * RaspberryPi (RPi2)
+ * 
  * @author idirz
  *
  */
 public class RaspberryPi2 {
-	
-	private BrailleDictionary BRAILLE_CHART = new BrailleDictionary(); //Object for the braille dictionary
-	protected char[] currentChars; //Character array of the current message being sent
-	protected int index; //Index of character currently being sent from currentChars
-	private int port; //Port number of the pi to receive and send packets
-	private InetAddress serverAddress; //Address of the server pi
-	private int serverPort; //Port of the server pi
+
+	private BrailleDictionary BRAILLE_CHART = new BrailleDictionary(); // Object for the braille dictionary
+	protected char[] currentChars; // Character array of the current message being sent
+	protected int index; // Index of character currently being sent from currentChars
+	private int port; // Port number of the pi to receive and send packets
+	private InetAddress serverAddress; // Address of the server pi
+	private int serverPort; // Port of the server pi
 	private String flag;
 	private static final int MAX_SIZE = 300;
-
+	static String s = "";
+	static int count = 0;
+	static int i = 0;
 
 	public RaspberryPi2(int port, int index) {
 		this.port = port;
@@ -41,7 +44,7 @@ public class RaspberryPi2 {
 		this.port = port;
 		this.index = 0;
 	}
-	
+
 	/**
 	 * Receive the characters of the text from the server
 	 * 
@@ -51,55 +54,49 @@ public class RaspberryPi2 {
 		// Receive JSON and store in array
 
 		String received = "";
-		
-		DatagramSocket socket = null; 
-		DatagramPacket packet = null; 
 
 		try {
-			socket = new DatagramSocket(port);
-			packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
+			DatagramSocket socket = new DatagramSocket(port);
+			DatagramPacket packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
 
 			socket.receive(packet);
 			serverAddress = packet.getAddress();
 			serverPort = packet.getPort();
 			received = new String(packet.getData(), 0, packet.getLength());
+			socket.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			socket.close();
+			return "";
 		}
-		
+
 		return received;
-		
+
 	}
 
-	
 	public boolean isProperPacket(String message) {
 
-		//Check if input is null
-		if(message == null) {
+		// Check if input is null
+		if (message == null) {
 			return false;
 		}
-		//Check if the string is empty
+		// Check if the string is empty
 		if (message.length() == 0) {
 			return false;
 		}
 
-		//Check for invalid characters
+		// Check for invalid characters
 		for (char c : message.toCharArray()) {
 			if (!BRAILLE_CHART.contains(c)) {
 				return false;
 			}
 		}
-		
-		//Update current character
+
+		// Update current character
 		currentChars = message.toCharArray();
-		
+
 		return true;
 	}
-	
-	
+
 	/**
 	 * Send feedback to server if characters were successfully received
 	 * 
@@ -108,12 +105,12 @@ public class RaspberryPi2 {
 	 */
 	public void sendResult(boolean validChar) {
 
-		//Convert boolean to bytes
+		// Convert boolean to bytes
 		byte[] data = String.valueOf(validChar).getBytes();
 
 		DatagramSocket socket;
 		try {
-			//Create Packet with the address and port stored from receival
+			// Create Packet with the address and port stored from receival
 			socket = new DatagramSocket(port);
 			DatagramPacket packet = new DatagramPacket(data, data.length, serverAddress, serverPort);
 
@@ -132,11 +129,10 @@ public class RaspberryPi2 {
 	 * @return A string containing the braille version of the character
 	 */
 	public String convertCharToBraille(char c) {
-		if(BRAILLE_CHART.contains(c)) {
+		if (BRAILLE_CHART.contains(c)) {
 			return BRAILLE_CHART.getBraille(c);
-		}
-		else {
-			//If character is invalid, just display empty char
+		} else {
+			// If character is invalid, just display empty char
 			return BRAILLE_CHART.getBraille(' ');
 		}
 	}
@@ -148,30 +144,67 @@ public class RaspberryPi2 {
 	 */
 	public void sendNextChar(int buttonFlag) {
 
-//		String portDescriptor = "COM5";
-//		// Access the flag
-//		SerialPort serial = SerialPort.getCommPort(portDescriptor);
-//		serial.openPort();
-//		InputStream in = serial.getInputStream();
-//	
-//		serial.closePort();
-//		
-//		if (Integer.parseInt(this.flag) == 1) {
-//			// send this.currentChars[index]
-//			// index++;
-//		}
+		String s = "";
+		int count = 0;
+		int i = 0;
+		String[] byteArray = new String[] { "101010", "111111", "101100", "011001" };
 
-		//Increment the index for the next character
-		System.out.println(this.currentChars[index]);
+		SerialPort port = SerialPort.getCommPort("COM5");
+		port.setComPortParameters(9600, 8, 1, 0);
+		port.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
+		System.out.println("Open port: " + port.openPort());
+		Scanner in = new Scanner(port.getInputStream());
+
+		port.addDataListener(new SerialPortDataListener() {
+			@Override
+			public int getListeningEvents() {
+				return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+			}
+
+			@Override
+			public void serialEvent(SerialPortEvent serialPortEvent) {
+
+				s = in.nextLine();
+				System.out.println(s);
+
+				while (true) {
+					if (s.equals("1")) {
+						try {
+							port.getOutputStream().write(byteArray[count].getBytes());
+							port.getOutputStream().flush();
+							Thread.sleep(5000);
+
+						} catch (IOException | InterruptedException e) {
+
+							e.printStackTrace();
+						}
+						System.out.println("Sent Number " + byteArray[count]);
+
+						count++;
+					}
+
+					if (count == 4) {
+						count = 0;
+					}
+
+					while (port.bytesAvailable() > 0) {
+						s = in.nextLine();
+						System.out.println(s);
+					}
+				}
+			}
+
+		});
+
+		// Increment the index for the next character
 		index++;
 	}
 
 	public char[] getCharArray() {
-		//Return null if array was not initialized or is empty
-		if(this.currentChars == null) {
+		// Return null if array was not initialized or is empty
+		if (this.currentChars == null) {
 			return null;
-		}
-		else if(this.currentChars.length == 0) {
+		} else if (this.currentChars.length == 0) {
 			return null;
 		}
 		return this.currentChars;
@@ -183,41 +216,34 @@ public class RaspberryPi2 {
 	 * @return True if it is the last one, false otherwise
 	 */
 	public boolean isLastChar() {
-		//Compare index position to the size of the character array
+		// Compare index position to the size of the character array
 		return index >= currentChars.length;
 	}
 
 	public static void main(String[] args) {
 
-		int[] input = new int[] {1, 1, 1, 0, 0, 1, 1};
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Please enter port number");
-		int port = scanner.nextInt();
-		
-		
+		int[] input = new int[] { 1, 1, 1, 0, 0, 1, 1 };
+
 		while (true) {
 
 			// Create pi object with specific port
-			RaspberryPi2 pi = new RaspberryPi2(port);
+			RaspberryPi2 pi = new RaspberryPi2(1002);
 
 			// Receive the characters
 			System.out.println("Receiving characters");
 			String msg = pi.receiveChars();
-			System.out.println(msg);
 			boolean check = pi.isProperPacket(msg);
 
-			pi.sendResult(check);
-			
 			if (check) {
 
 				while (!pi.isLastChar()) {
 					// Check for Arduino input (1 or 0)
 
-					pi.sendNextChar(1);
+					pi.sendNextChar();
 
 				}
 
-				//pi.sendNextChar(1);
+				pi.sendNextChar();
 			}
 			pi.index = 0;
 
