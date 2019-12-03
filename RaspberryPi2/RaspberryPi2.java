@@ -1,4 +1,6 @@
-package model;
+
+
+import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,19 +51,23 @@ public class RaspberryPi2 {
 		// Receive JSON and store in array
 
 		String received = "";
+		
+		DatagramSocket socket = null; 
+		DatagramPacket packet = null; 
 
 		try {
-			DatagramSocket socket = new DatagramSocket(port);
-			DatagramPacket packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
+			socket = new DatagramSocket(port);
+			packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
 
 			socket.receive(packet);
 			serverAddress = packet.getAddress();
 			serverPort = packet.getPort();
 			received = new String(packet.getData(), 0, packet.getLength());
-			socket.close();
 
 		} catch (Exception e) {
-			return "";
+			e.printStackTrace();
+		} finally {
+			socket.close();
 		}
 		
 		return received;
@@ -142,20 +148,21 @@ public class RaspberryPi2 {
 	 */
 	public void sendNextChar(int buttonFlag) {
 
-		String portDescriptor = "COM5";
-		// Access the flag
-		SerialPort serial = SerialPort.getCommPort(portDescriptor);
-		serial.openPort();
-		InputStream in = serial.getInputStream();
-	
-		serial.closePort();
-		
-		if (Integer.parseInt(this.flag) == 1) {
-			// send this.currentChars[index]
-			// index++;
-		}
+//		String portDescriptor = "COM5";
+//		// Access the flag
+//		SerialPort serial = SerialPort.getCommPort(portDescriptor);
+//		serial.openPort();
+//		InputStream in = serial.getInputStream();
+//	
+//		serial.closePort();
+//		
+//		if (Integer.parseInt(this.flag) == 1) {
+//			// send this.currentChars[index]
+//			// index++;
+//		}
 
 		//Increment the index for the next character
+		System.out.println(this.currentChars[index]);
 		index++;
 	}
 
@@ -183,17 +190,24 @@ public class RaspberryPi2 {
 	public static void main(String[] args) {
 
 		int[] input = new int[] {1, 1, 1, 0, 0, 1, 1};
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Please enter port number");
+		int port = scanner.nextInt();
+		
 		
 		while (true) {
 
 			// Create pi object with specific port
-			RaspberryPi2 pi = new RaspberryPi2(1002);
+			RaspberryPi2 pi = new RaspberryPi2(port);
 
 			// Receive the characters
 			System.out.println("Receiving characters");
 			String msg = pi.receiveChars();
+			System.out.println(msg);
 			boolean check = pi.isProperPacket(msg);
 
+			pi.sendResult(check);
+			
 			if (check) {
 
 				while (!pi.isLastChar()) {
@@ -203,7 +217,7 @@ public class RaspberryPi2 {
 
 				}
 
-				pi.sendNextChar(1);
+				//pi.sendNextChar(1);
 			}
 			pi.index = 0;
 
