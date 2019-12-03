@@ -7,7 +7,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import com.fazecast.jSerialComm.*;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * RaspberryPi2 is a class responsible for the operations concerning the client RaspberryPi (RPi2)
