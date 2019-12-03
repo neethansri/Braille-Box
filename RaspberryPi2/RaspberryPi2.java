@@ -221,7 +221,10 @@ public class RaspberryPi2 {
 
 	public static void main(String[] args) {
 
-		int[] input = new int[] { 1, 1, 1, 0, 0, 1, 1 };
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Please enter port number");
+		int port = scanner.nextInt();
+		scanner.close();
 
 		while (true) {
 
