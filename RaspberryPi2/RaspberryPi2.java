@@ -1,3 +1,4 @@
+package model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class RaspberryPi2 {
 
 	private BrailleDictionary BRAILLE_CHART = new BrailleDictionary(); // Object for the braille dictionary
 	protected char[] currentChars; // Character array of the current message being sent
+	protected String[] byteArray; 
 	protected int index; // Index of character currently being sent from currentChars
 	private int port; // Port number of the pi to receive and send packets
 	private InetAddress serverAddress; // Address of the server pi
@@ -52,27 +54,23 @@ public class RaspberryPi2 {
 	public String receiveChars() {
 		// Receive JSON and store in array
 
-			String received = "";
-			
-			DatagramSocket socket = null; 
-			DatagramPacket packet = null; 
+		String received = "";
 
-			try {
-				socket = new DatagramSocket(port);
-				packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
+		try {
+			DatagramSocket socket = new DatagramSocket(port);
+			DatagramPacket packet = new DatagramPacket(new byte[MAX_SIZE], MAX_SIZE);
 
-				socket.receive(packet);
-				serverAddress = packet.getAddress();
-				serverPort = packet.getPort();
-				received = new String(packet.getData(), 0, packet.getLength());
+			socket.receive(packet);
+			serverAddress = packet.getAddress();
+			serverPort = packet.getPort();
+			received = new String(packet.getData(), 0, packet.getLength());
+			socket.close();
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				socket.close();
-			}
-			
-			return received;
+		} catch (Exception e) {
+			return "";
+		}
+
+		return received;
 
 	}
 
@@ -140,13 +138,25 @@ public class RaspberryPi2 {
 		}
 	}
 
+	public String[] convertAllToBraille() {
+		int count1 = 0;
+		String[] brailles = new String[this.currentChars.length];
+		for(char c in this.currentChars) {
+			brailles[count1] = this.convertCharToBraille(c);
+			count1++;
+		}
+	}
+	
 	/**
 	 * Send the next parsed character to the Arduino
 	 * 
 	 * @param lastChar if the character the last one in the text
 	 */
-	public void sendNextChar() {
+	public void sendNextChar(int buttonFlag) {
 
+		String s = "";
+		int count = 0;
+		int i = 0;
 		String[] byteArray = new String[] { "101010", "111111", "101100", "011001" };
 
 		SerialPort port = SerialPort.getCommPort("COM5");
@@ -222,10 +232,7 @@ public class RaspberryPi2 {
 
 	public static void main(String[] args) {
 
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Please enter port number");
-		int port = scanner.nextInt();
-		scanner.close();
+		int[] input = new int[] { 1, 1, 1, 0, 0, 1, 1 };
 
 		while (true) {
 
