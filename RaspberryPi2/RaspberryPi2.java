@@ -157,7 +157,7 @@ public class RaspberryPi2 {
 	public void sendNextChar() {
 
 
-		SerialPort sPort = SerialPort.getCommPort("COM5");
+		SerialPort sPort = SerialPort.getCommPort("/dev/ttyACM0");
 		sPort.setComPortParameters(9600, 8, 1, 0);
 		sPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
 		System.out.println("Open port: " + sPort.openPort());
@@ -180,7 +180,7 @@ public class RaspberryPi2 {
 						try {
 							sPort.getOutputStream().write(byteArray[count].getBytes());
 							sPort.getOutputStream().flush();
-							Thread.sleep(5000);
+							Thread.sleep(2000);
 
 						} catch (IOException | InterruptedException e) {
 
