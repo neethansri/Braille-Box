@@ -15,7 +15,106 @@ int flag = 0;
 void setup() {
   // put your setup code here, to run once:
   pinMode(buttonPin1, INPUT);
+  pinMode(buttonPin2, INPUTconst int buttonPin1 = 4;
+const int buttonPin2 = 7;
+const int solenoidPIN1 = 12;
+const int solenoidPIN2 = 8;
+const int solenoidPIN3 = 2;
+const int solenoidPIN4 = 13;
+const int solenoidPIN5 = 11;
+const int solenoidPIN6 = 9;
+int buttonstate1 = 0;
+int buttonstate2 = 0;
+String rx_str = "";
+int result;
+String flag = "0";
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(buttonPin1, INPUT);
   pinMode(buttonPin2, INPUT);
+  pinMode(solenoidPIN1, OUTPUT);
+  pinMode(solenoidPIN2, OUTPUT);
+  pinMode(solenoidPIN3, OUTPUT);
+  pinMode(solenoidPIN4, OUTPUT);
+  pinMode(solenoidPIN5, OUTPUT);
+  pinMode(solenoidPIN6, OUTPUT);
+  Serial.begin(9600);
+
+}
+
+void loop(){
+  buttonstate1 = digitalRead(buttonPin1);
+  buttonstate2 = digitalRead(buttonPin2);
+
+  if (buttonstate1 == HIGH) {
+      flag = "1";
+      //Serial.println("1");
+    }
+  if (buttonstate2 == HIGH) {
+      flag = "0";
+      //Serial.println("0");
+  }
+  Serial.println(flag);
+  if (buttonstate2 == HIGH) {
+    digitalWrite(solenoidPIN1, LOW);
+    digitalWrite(solenoidPIN2, LOW);
+    digitalWrite(solenoidPIN3, LOW);
+    digitalWrite(solenoidPIN4, LOW);
+    digitalWrite(solenoidPIN5, LOW);
+    digitalWrite(solenoidPIN6, LOW);
+    flag = "0";
+
+  }
+  
+  while (Serial.available()) {
+    rx_str = Serial.readString();
+    }
+    char num1 = rx_str.charAt(0);
+    char num2 = rx_str.charAt(1);
+    char num3 = rx_str.charAt(2);
+    char num4 = rx_str.charAt(3);
+    char num5 = rx_str.charAt(4);
+    char num6 = rx_str.charAt(5);
+    buttonstate2 = digitalRead(buttonPin2);
+    if (num1 == '1') {
+      digitalWrite(solenoidPIN2, HIGH);
+    } else {
+      digitalWrite(solenoidPIN2, LOW);
+    }
+    if (num2 == '1') {
+      digitalWrite(solenoidPIN3, HIGH);
+    } else {
+      digitalWrite(solenoidPIN3, LOW);
+    }
+     if (num3 == '1') {
+      digitalWrite(solenoidPIN3, HIGH);
+    } else {
+      digitalWrite(solenoidPIN3, LOW);
+    }
+    if (num4 == '1') {
+      digitalWrite(solenoidPIN4, HIGH);
+    } else {
+      digitalWrite(solenoidPIN4, LOW);
+    }
+    if (num5 == '1') {
+      digitalWrite(solenoidPIN5, HIGH);
+    } else {
+      digitalWrite(solenoidPIN5, LOW);
+    }
+    if (num6 == '1') {
+      digitalWrite(solenoidPIN6, HIGH);
+    } else {
+      digitalWrite(solenoidPIN6, LOW);
+    }
+  
+  if (buttonstate2 == HIGH) {
+      flag = "0";
+      //Serial.println("0");
+  }
+}
+
+);
   pinMode(solenoidPIN1, OUTPUT);
   pinMode(solenoidPIN2, OUTPUT);
   pinMode(solenoidPIN3, OUTPUT);
