@@ -1,4 +1,4 @@
-package model;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -94,7 +94,8 @@ public class RaspberryPi2 {
 
 		// Update current character
 		currentChars = message.toCharArray();
-
+		this.byteArray = this.convertAllToBraille();
+		
 		return true;
 	}
 
@@ -141,10 +142,11 @@ public class RaspberryPi2 {
 	public String[] convertAllToBraille() {
 		int count1 = 0;
 		String[] brailles = new String[this.currentChars.length];
-		for(char c in this.currentChars) {
+		for(char c : this.currentChars) {
 			brailles[count1] = this.convertCharToBraille(c);
 			count1++;
 		}
+		return brailles;
 	}
 	
 	/**
@@ -152,20 +154,16 @@ public class RaspberryPi2 {
 	 * 
 	 * @param lastChar if the character the last one in the text
 	 */
-	public void sendNextChar(int buttonFlag) {
+	public void sendNextChar() {
 
-		String s = "";
-		int count = 0;
-		int i = 0;
-		String[] byteArray = new String[] { "101010", "111111", "101100", "011001" };
 
-		SerialPort port = SerialPort.getCommPort("COM5");
-		port.setComPortParameters(9600, 8, 1, 0);
-		port.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
-		System.out.println("Open port: " + port.openPort());
-		Scanner in = new Scanner(port.getInputStream());
+		SerialPort sPort = SerialPort.getCommPort("COM5");
+		sPort.setComPortParameters(9600, 8, 1, 0);
+		sPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
+		System.out.println("Open port: " + sPort.openPort());
+		Scanner in = new Scanner(sPort.getInputStream());
 
-		port.addDataListener(new SerialPortDataListener() {
+		sPort.addDataListener(new SerialPortDataListener() {
 			@Override
 			public int getListeningEvents() {
 				return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
@@ -180,8 +178,8 @@ public class RaspberryPi2 {
 				while (true) {
 					if (s.equals("1")) {
 						try {
-							port.getOutputStream().write(byteArray[count].getBytes());
-							port.getOutputStream().flush();
+							sPort.getOutputStream().write(byteArray[count].getBytes());
+							sPort.getOutputStream().flush();
 							Thread.sleep(5000);
 
 						} catch (IOException | InterruptedException e) {
@@ -197,7 +195,7 @@ public class RaspberryPi2 {
 						count = 0;
 					}
 
-					while (port.bytesAvailable() > 0) {
+					while (sPort.bytesAvailable() > 0) {
 						s = in.nextLine();
 						System.out.println(s);
 					}
@@ -232,33 +230,84 @@ public class RaspberryPi2 {
 
 	public static void main(String[] args) {
 
-		int[] input = new int[] { 1, 1, 1, 0, 0, 1, 1 };
-
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Please enter port number:");
+		int portNum = scanner.nextInt();
+		
+		SerialPort sPort = SerialPort.getCommPort("/dev/ttyACM0");
+		sPort.setComPortParameters(9600, 8, 1, 0);
+		sPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
+		System.out.println("Open port: " + sPort.openPort());
+		
+		
+		
 		while (true) {
 
+			
 			// Create pi object with specific port
-			RaspberryPi2 pi = new RaspberryPi2(1002);
-
+			RaspberryPi2 pi = new RaspberryPi2(portNum);
+			
 			// Receive the characters
 			System.out.println("Receiving characters");
 			String msg = pi.receiveChars();
+			System.out.println(msg);
 			boolean check = pi.isProperPacket(msg);
+			System.out.println(check);
 
 			if (check) {
+					
+					Scanner in = new Scanner(sPort.getInputStream());
+			
+					pi.s = in.nextLine();
+					System.out.println(pi.s);
+					while(pi.count < pi.currentChars.length) {
+						in = new Scanner(sPort.getInputStream());
+						pi.s = in.nextLine();
+						//System.out.println(pi.s);
+						if (pi.s.equals("1")) {
+							try {
+								sPort.getOutputStream().write(pi.byteArray[count].getBytes());
+								sPort.getOutputStream().flush();
+								
+								Thread.sleep(2000);
 
-				while (!pi.isLastChar()) {
-					// Check for Arduino input (1 or 0)
+							} catch (IOException | InterruptedException e) {
 
-					pi.sendNextChar();
+								e.printStackTrace();
+							}
+							System.out.println("Sent Number " + pi.byteArray[count]);
 
-				}
+							pi.count++;
+						}
+						else {
+						}
 
-				pi.sendNextChar();
+					}
+					System.out.println("2");
+					pi.currentChars = null;
+					pi.count = 0;
+					
+//					sPort.addDataListener(new SerialPortDataListener() {
+//						@Override
+//						public int getListeningEvents() {
+//							return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+//						}
+//
+//						@Override
+//						public void serialEvent(SerialPortEvent serialPortEvent) {
+//							
+//							
+//
+//							
+//							
+//						}
+//						
+//					});
+					
+
 			}
-			pi.index = 0;
-
 		}
-
+		
 	}
 
 }
