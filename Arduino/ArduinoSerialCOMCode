@@ -1,11 +1,13 @@
-const int buttonPin1 = 2;
-const int buttonPin2 = 3;
-const int solenoidPIN1 = 4;
-const int solenoidPIN2 = 5;
-const int solenoidPIN3 = 6;
-const int solenoidPIN4 = 7;
-const int solenoidPIN5 = 8;
+const int buttonPin1 = 4;
+const int buttonPin2 = 7;
+const int solenoidPIN1 = 12;
+const int solenoidPIN2 = 8;
+const int solenoidPIN3 = 2;
+const int solenoidPIN4 = 13;
+const int solenoidPIN5 = 11;
 const int solenoidPIN6 = 9;
+int buttonstate1 = 0;
+int buttonstate2 = 0;
 String rx_str = "";
 int result;
 int flag = 0;
@@ -27,6 +29,21 @@ void setup() {
 void loop(){
 buttonstate1 = digitalRead(buttonPin1);
 buttonstate2 = digitalRead(buttonPin2);
+
+if (buttonstate1 == HIGH) {
+    flag = 1;
+    Serial.println("1");
+  }
+  if (buttonstate2 == HIGH) {
+    digitalWrite(LED, LOW);
+    digitalWrite(LED2, LOW);
+    digitalWrite(LED3, LOW);
+    digitalWrite(LED4, LOW);
+    digitalWrite(LED5, LOW);
+    digitalWrite(LED6, LOW);
+
+
+  }
   while (Serial.available()) {
     rx_str = Serial.readString()
     }
