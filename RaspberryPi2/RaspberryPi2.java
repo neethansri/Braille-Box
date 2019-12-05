@@ -19,7 +19,7 @@ import java.util.Scanner;
  * RaspberryPi (RPi2)
  * 
  * @author idirz
- *
+ * @author solan
  */
 public class RaspberryPi2 {
 
