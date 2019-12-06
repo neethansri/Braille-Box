@@ -3,6 +3,7 @@ import json
 import datetime
 import socket, sys, time
 
+
 class DB():
     @staticmethod
     def create_table(conn):
@@ -26,13 +27,7 @@ class DB():
                      lastName TEXT NOT NULL,
                      FOREIGN KEY(messageId) REFERENCES message_Info (messageId)
                      );'''
-        # Creates the message_Info table with the following columns"""
-        #sql3 = ''' CREATE TABLE IF NOT EXISTS User_Info (
-                    #firstName text NOT NULL,
-                    #lastName text NOT NULL,
-                    #userId integer NOT NULL,
-                    #FOREIGN KEY (userId) REFERENCES message_Container(userId)
-                    #)
+        
         # Try catch statement to execute the sql statements and catch any errors that may occur
         try:
             c = conn.cursor()
@@ -85,7 +80,7 @@ class DB():
         connection.commit()
         
         idValue = cur.fetchone()[0]
-        print(idValue)
+       
         if idValue is None:
             idValue = 1
         else:
@@ -120,7 +115,7 @@ class DB():
         cur = connection.cursor()
         cur.execute(sql, tableValue)
         connection.commit()
-        connection.close()
+        #connection.close()
         print("Message was saved in database")
         
         
@@ -139,7 +134,7 @@ class DB():
         cur = connection.cursor()
         cur.execute(sql, tableValue)
         connection.commit()
-        connection.close()
+        #connection.close()
         
 
    
@@ -158,7 +153,7 @@ class DB():
         cur = connection.cursor()
         cur.execute(sql, (idValue,))
         connection.commit()
-        connection.close()
+        #connection.close()
         
     @staticmethod
     def getSentList(conn):
@@ -191,24 +186,36 @@ class DB():
         conn.commit()
         
     
-    port = 1001
-    hostAddress = ''
-
-
-    def receiveMessage():
+    port = 1002
+    hostAddress = '10.0.0.1'
+    
+    def receiveMessage(self, val):
         #change later
         
-        global hostAddress
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        server_address = ('', port)
+        
+        hostAddress = '10.0.0.1'
+        #if val == 1:
+                
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ("172.20.10.2", 1111)
+        print(server_address)       
         s.bind(server_address)
+        s.listen(5)
         print('Receiving message')
-        buf, hostAddress = s.recvfrom(port)
-        print(hostAddress)
+        
+        (client,address) = s.accept()
+        #ct = client_thread(client)
+        #client.run()
+        print(client)
+        
+        
+        buf = client.recv(100)
+        print(buf)
+        
+        data = ("Message Received")
+        s.sendto(data.encode('utf-8'), hostAddress)
         rawStr = str(buf)
-        message = rawStr[2:len(rawStr)-1]
-        print(message)
-        s.shutdown(1)
+        #s.shutdown(1)
         return message 
 
 
@@ -217,11 +224,13 @@ class DB():
         # change later
         
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        global hostAddress
-        print(hostAddress)
+        hostAddress = ('172.20.10.4', 1112) 
+        
         data = str(result)
         s.sendto(data.encode('utf-8'), hostAddress)
-        
+    
+
+
     @staticmethod
     def parseText(message):
         message = message.lower()
@@ -246,44 +255,66 @@ class DB():
                     formattedArray.append(';')
                 formattedArray.append(char)
             
-        
+        formattedArray = ''.join(formattedArray)
         return formattedArray
 
 def main():
         foo = DB()
         conn = foo.server()
         cur = conn.cursor()
+        filepath = 'pi.txt'
+        oldLine = None
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ("", 5300)
+        print(server_address)       
+        s.bind(server_address)
+        s.listen(5)
         while(True):
-            filepath = 'parse.txt'
-            data = None
-            with open(filepath) as fp:
-                for line in fp:
-                        a,b,c,d,e = line.split(',')
-                        firstName = a
-                        lastName = b
-                        ipAddress = c
-                        port = d
-                        msg = e
-             
-                        packet = (firstName,lastName,ipAddress,port,msg)
-                        
-                        idV = foo.messageIdGenerator(conn)
-                        print(idV)
-                        messagedb = (packet[4],0,idV)
-                        time = datetime.datetime.now().strftime("c")
-                        foo.addMessageInfo(messagedb)
-                        lengthMsg = foo.getLengthOfMessage(packet[4])
-                        
-                        
-                        foo.addMessageContainer((lengthMsg,time,idV,packet[0],packet[1]))
-                       
-                        result = foo.parseText(packet[4])
-                        foo.sendResult(result)
-                        fp.close()
+            print('Receiving message')
+            (client,address) = s.accept()
+
             
+            buf = client.recv(100)
+            print(buf)
             
+            rawStr = str(buf)
+            
+            if rawStr == oldLine:
+                print("This is a duplicate message trying to be sent by the same user")
+            else:
+                oldLine = rawStr
+                string = rawStr.split(',')   
+                     
+                firstName = string[0]
+                lastName = string[1]
+                 
+                ipAddress = string[2]
+                 
+                port = string[3]
+                 
+                msg = string[4]
+                 
+
+                packet = (firstName,lastName,ipAddress,port,msg)
+                 
+                idV = foo.messageIdGenerator(conn)
+               
+                messagedb = (packet[4],0,idV)
+                time = datetime.datetime.now()
+                 
+                foo.addMessageInfo(messagedb)
+                lengthMsg = foo.getLengthOfMessage(packet[4])
+                 
+                 
+                foo.addMessageContainer((lengthMsg,time,idV,packet[0],packet[1]))
+                data = ("Message Received")
+                s.sendto(data.encode('utf-8'), hostAddress)
+                foo.updateSentStatus(conn,idV)
+                result = foo.parseText(packet[4])
                 
-            
+                foo.sendResult(result)
+              
+        
 if __name__=='__main__':
         main()
 
