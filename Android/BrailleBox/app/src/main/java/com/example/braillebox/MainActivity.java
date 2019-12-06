@@ -37,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
         Thread myThread = new Thread(new MyServerThread());
         myThread.start();
     }
-
+/**
+ * MyServerThread is used to open a serversocket that allows information to be received from the server pi. 
+ * The information sent from the server pi to the app is used to confirm that the message was received.
+ * The Toast is the part where the confirmation message is displayed on the android device with the variable message received from the server pi.
+ */
     class MyServerThread implements Runnable{
         Socket socket;
         ServerSocket serverSocket;

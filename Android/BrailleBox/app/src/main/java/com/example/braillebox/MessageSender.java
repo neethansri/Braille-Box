@@ -12,6 +12,9 @@ public class MessageSender extends AsyncTask<ArrayList,Void,Void> {
     /*
      * @param voids The parameters of the task.
      * @return A result, defined by the subclass of this task.
+     * 
+     * The function is executed in the background where the information packet is sent using serversockets.
+     * The serversocket is already opened from the server Pi, which connects with this socket using the port number and ip address entered from the user.
      */
 
     Socket socket;
