@@ -34,43 +34,50 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        Thread myThread = new Thread(new MyServerThread());
-//        myThread.start();
+        Thread myThread = new Thread(new MyServerThread());
+        myThread.start();
     }
 
-//    class MyServerThread implements Runnable{
-//        Socket socket;
-//        ServerSocket serverSocket;
-//        InputStreamReader inputStreamReader;
-//        BufferedReader bufferReader;
-//        String message;
-//        Handler handler = new Handler();
-//        @Override
-//        public void run() {
-//            try {
-//                serverSocket = new ServerSocket(1001);
-//                while(true) {
-//                    socket = serverSocket.accept();
-//                    inputStreamReader = new InputStreamReader(socket.getInputStream());
-//                    bufferReader = new BufferedReader(inputStreamReader);
-//                    message = bufferReader.readLine();
-//                    System.out.println(message);
-//
-//                    handler.post(new Runnable(){
-//
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
-//            }catch(IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    class MyServerThread implements Runnable{
+        Socket socket;
+        ServerSocket serverSocket;
+        InputStreamReader inputStreamReader;
+        BufferedReader bufferReader;
+        String message;
+        Handler handler = new Handler();
+        @Override
+        public void run() {
+            try {
+                serverSocket = new ServerSocket(1001);
+                while(true) {
+                    socket = serverSocket.accept();
+                    inputStreamReader = new InputStreamReader(socket.getInputStream());
+                    bufferReader = new BufferedReader(inputStreamReader);
+                    message = bufferReader.readLine();
+                    System.out.println(message);
+
+                    handler.post(new Runnable(){
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Sends the input of the user to the MessageSender class
+     *
+     * @param v
+     */
     public void send(View v){
 
+        // Read the inputs
         firstname = (EditText) findViewById(R.id.firstName);
         lastname = (EditText) findViewById(R.id.lastName);
         messagesent = (EditText) findViewById(R.id.message);
@@ -80,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> text = new ArrayList<String>();
 
+        // Convert inputs to strings
         text.add(firstname.getText().toString());
         text.add(lastname.getText().toString());
         text.add(messagesent.getText().toString());
         text.add(ip.getText().toString());
         text.add(port.getText().toString());
 
-        Toast.makeText(getApplicationContext(),"Message Received",Toast.LENGTH_SHORT).show();
-
+        // Send the packet
         MessageSender messagesender = new MessageSender();
         messagesender.execute(text);
     }
