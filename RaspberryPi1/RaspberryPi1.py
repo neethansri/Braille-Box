@@ -12,13 +12,13 @@ class DB():
         :return:
         """
         
-         # Creates the message_Info table with the following columns"""
+         # Creates the message_Info table with the following columns
         sql = ''' CREATE TABLE IF NOT EXISTS message_Info (
                     message text NOT NULL,
                     messageSent boolean NOT NULL,
                     messageId integer NOT NULL PRIMARY KEY
                     ); '''
-        # Creates the message_Container table with the following columns"""
+        # Creates the message_Container table with the following columns
         sql2 = ''' CREATE TABLE IF NOT EXISTS message_Container (
                      lengthOfMessage integer NOT NULL,
                      receivedTimeStamp Date NOT NULL,
@@ -73,7 +73,7 @@ class DB():
         :param conn: Connection object
         :return: Id value for new messages
         """
-        # sql statements to be executed to find max value in messageId column"""
+        # sql statements to be executed to find max value in messageId column
         sql = ''' SELECT MAX(messageId) FROM message_Info  '''
         cur = connection.cursor()
         cur.execute(sql)
@@ -155,47 +155,37 @@ class DB():
         connection.commit()
         #connection.close()
         
-    @staticmethod
-    def getSentList(conn):
-        
-        curs = conn.cursor()
-        curs.execute("SELECT * FROM message_Info WHERE messageSent = '1'")
-        rows = curs.fetchall()
-        return rows
-    
-    @staticmethod
-    def getAllMessages(conn):   
-        curs = conn.cursor()
-        sql = (''' SELECT*FROM message_Info ''')
-        
-        curs.execute(sql)
-        rows = curs.fetchall()
-        return rows
-
-    @staticmethod
-    def getLengthOfMessage(msg):
+     
+    def getLengthOfMessage(self,msg):
         
         length = len(msg)
         return length
     
-    @staticmethod
-    def deleteTable(conn):
+    
+    def deleteTable(self,conn):
+        """Used to delete tables without needing 
+        to open the database file to manually delete them
+        :param self: Instance of the class
+        :param conn: connection object
+        """
         sql = ''' DROP TABLE message_Info '''
         cur = conn.cursor()
         cur.execute(sql)
         conn.commit()
         
     
-    port = 1002
-    hostAddress = '10.0.0.1'
-    
-    def receiveMessage(self, val):
-        #change later
+    def receiveMessage(self):
+        """ Receiver function, allows us to receive messages 
+        from the app.
+        :param self: Instance of the class
+        :return: String
+        """
         
         
         hostAddress = '10.0.0.1'
-        #if val == 1:
-                
+        
+        
+        #Opens the socket and prepares to get inputs
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ("172.20.10.2", 1111)
         print(server_address)       
@@ -204,24 +194,27 @@ class DB():
         print('Receiving message')
         
         (client,address) = s.accept()
-        #ct = client_thread(client)
-        #client.run()
         print(client)
         
-        
+        #Gets the UDP packet
         buf = client.recv(100)
         print(buf)
-        
+        #Send the app a acknoledgement message
         data = ("Message Received")
         s.sendto(data.encode('utf-8'), hostAddress)
+        #Converts the packet to a string
         rawStr = str(buf)
-        #s.shutdown(1)
+        #Return string
         return message 
 
 
 
     def sendResult(self,result):
-        # change later
+        """ SendResult is a function that will send the 
+        parsed message to the device using UDP
+        :param self: Instance of the class
+        :param result: a string representation of the result 
+        """
         
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         hostAddress = ('172.20.10.4', 1112) 
@@ -231,12 +224,21 @@ class DB():
     
 
 
-    @staticmethod
-    def parseText(message):
+    
+    def parseText(self,message):
+        """parseText is the function that will convert the message into its 
+        proper braille format which will allow the device to convert the message into 
+        its corresponding braille.
+        :param self: Instance of the class
+        :param message: A String representation of the message
+        :returns: String representaion of the braille format of the message
+        """
+        #Makes the whole message lower case
         message = message.lower()
         formattedArray = list()
         numToggle = False
 
+        #Iterates through each charavter
         for char in message:
 
             num = ord(char)
@@ -254,34 +256,44 @@ class DB():
                     numToggle = False
                     formattedArray.append(';')
                 formattedArray.append(char)
-            
+        #Puts the character array back into a string
         formattedArray = ''.join(formattedArray)
+        #returns the string
         return formattedArray
 
 def main():
+    #Defining a class variable to intialize connection for the database
         foo = DB()
         conn = foo.server()
         cur = conn.cursor()
-        filepath = 'pi.txt'
+
+    #Oldline used to check if the message is trying to be spammed
         oldLine = None
+
+    #Opens the socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ("", 5300)
         print(server_address)       
         s.bind(server_address)
         s.listen(5)
+        
+        #Continues to run waiting for more messages
         while(True):
             print('Receiving message')
             (client,address) = s.accept()
 
-            
+            #Gets app input 
             buf = client.recv(100)
             print(buf)
             
+            #Convert to string
             rawStr = str(buf)
             
+            #Check if previous message is a duplicate with the current one being sent
             if rawStr == oldLine:
                 print("This is a duplicate message trying to be sent by the same user")
             else:
+                #Splits the string into its designated parts and adds information accordingly to database
                 oldLine = rawStr
                 string = rawStr.split(',')   
                      
@@ -294,9 +306,10 @@ def main():
                  
                 msg = string[4]
                  
-
+                #Everything is tucked into a tuple
                 packet = (firstName,lastName,ipAddress,port,msg)
-                 
+                
+                #Used to generate a unique id
                 idV = foo.messageIdGenerator(conn)
                
                 messagedb = (packet[4],0,idV)
@@ -307,14 +320,17 @@ def main():
                  
                  
                 foo.addMessageContainer((lengthMsg,time,idV,packet[0],packet[1]))
+                #Sends acknoledgement to the app saying the message was received
                 data = ("Message Received")
                 s.sendto(data.encode('utf-8'), hostAddress)
+                #Updates the database with the status of the message was sent
                 foo.updateSentStatus(conn,idV)
+                #parses result
                 result = foo.parseText(packet[4])
-                
+                #sends result
                 foo.sendResult(result)
               
-        
+#Used to run main function      
 if __name__=='__main__':
         main()
 
