@@ -6,7 +6,6 @@ The software for this project uses both Java and Python for its various needs
 # Running the code:
 
 Android App: The BrailleBox folder contains the whole Android Studio folder. To edit/use the BrailleBox app, you need to download that folder and store it in the default directory "AndroidStudioProjects". This directory is where the projects are saved from Android Studio.
-
 The other folder is called Receiver. This folder contains the Receiver Java file and class. When this receiver code runs with the appropriate port number that is inputted into the app. A communication between the app and the machine running the receiver code is established.
 
 RaspberryPi1: To run code for the server, Sqlite 3 and Python 3 must already be installed on your computer. Clone the repository, and open the RaspberryPi1.py code into a IDE, choose an appropriate port number above 1024,compile the code and run. The server code will wait to receive messsages from the Android App.
