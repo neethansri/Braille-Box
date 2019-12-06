@@ -19,7 +19,7 @@ import java.util.Scanner;
  * RaspberryPi (RPi2)
  * 
  * @author idirz
- * @author solan
+ *
  */
 public class RaspberryPi2 {
 
@@ -157,7 +157,7 @@ public class RaspberryPi2 {
 	public void sendNextChar() {
 
 
-		SerialPort sPort = SerialPort.getCommPort("/dev/ttyACM0");
+		SerialPort sPort = SerialPort.getCommPort("COM5");
 		sPort.setComPortParameters(9600, 8, 1, 0);
 		sPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
 		System.out.println("Open port: " + sPort.openPort());
@@ -180,7 +180,7 @@ public class RaspberryPi2 {
 						try {
 							sPort.getOutputStream().write(byteArray[count].getBytes());
 							sPort.getOutputStream().flush();
-							Thread.sleep(2000);
+							Thread.sleep(5000);
 
 						} catch (IOException | InterruptedException e) {
 
@@ -262,8 +262,7 @@ public class RaspberryPi2 {
 					System.out.println(pi.s);
 					while(pi.count < pi.currentChars.length) {
 						in = new Scanner(sPort.getInputStream());
-						pi.s = in.nextLine();
-						//System.out.println(pi.s);
+						pi.s = in.nextLine();						
 						if (pi.s.equals("1")) {
 							try {
 								sPort.getOutputStream().write(pi.byteArray[count].getBytes());
@@ -283,26 +282,10 @@ public class RaspberryPi2 {
 						}
 
 					}
-					System.out.println("2");
 					pi.currentChars = null;
 					pi.count = 0;
 					
-//					sPort.addDataListener(new SerialPortDataListener() {
-//						@Override
-//						public int getListeningEvents() {
-//							return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-//						}
-//
-//						@Override
-//						public void serialEvent(SerialPortEvent serialPortEvent) {
-//							
-//							
-//
-//							
-//							
-//						}
-//						
-//					});
+
 					
 
 			}
