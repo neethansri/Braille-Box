@@ -11,7 +11,7 @@ import java.util.Scanner;
  * @author idirz
  *
  */
-public class JSONSender extends Thread {
+public class UDPSender extends Thread {
 	
 	public static void main(String[] args) throws IOException {
 		
