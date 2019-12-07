@@ -1,4 +1,4 @@
-package test;
+
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import model.RaspberryPi2;
+
 
 class RaspberryPi2Test {
 	private RaspberryPi2 testPi;
@@ -14,16 +14,21 @@ class RaspberryPi2Test {
 	void setUp() throws Exception {
 		testPi = new RaspberryPi2(1002);
 	}
-	
+	/**
+	 * Test to check if the object converts characters as desired
+	 */
 	@Test
 	void testBrailleDict() {
 		assertEquals("100101", testPi.convertCharToBraille('u'), "U character should return 100101");
 		assertEquals("110101", testPi.convertCharToBraille('#'), "# character should return 110101");
-		assertEquals("000000", testPi.convertCharToBraille(' '), "Blank character should return 100101");
-		assertEquals("000000", testPi.convertCharToBraille('*'), "Invalid  character should return 100101");
+		assertEquals("000000", testPi.convertCharToBraille(' '), "Blank character should return 000000");
+		assertEquals("000000", testPi.convertCharToBraille('*'), "Invalid  character should return 000000");
 
 	}
 	
+	/**
+	 * Test that the object can identify proper and unproper messages
+	 */
 	@Test
 	void testProperPacket() {
 		assertTrue(testPi.isProperPacket("hello"), "A proper message should return true");
@@ -33,6 +38,9 @@ class RaspberryPi2Test {
 		
 	}
 	
+	/**
+	 * Test if the character array is updated as desired
+	 */
 	@Test
 	void testCharArray() {
 		
@@ -48,6 +56,9 @@ class RaspberryPi2Test {
 		
 	}
 	
+	/**
+	 * Test if the object can properly identify the last character
+	 */
 	@Test
 	void testLastChar() {
 		testPi.isProperPacket("hello");
