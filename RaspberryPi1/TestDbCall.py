@@ -1,15 +1,20 @@
-
+#imports
 import RaspberryPi1
 import unittest
 import json
 import sqlite3
 
 
-
+#Class made to run test functions using python version of unit test
 class TestDatabaseCommands(unittest.TestCase):
     
         
     def test_insertMessage(self):
+        """test_insertMessage tests if messages are properly added to the database
+        :param self: Instance of class
+        :return: If method works or not
+        """
+
         try:
             testdb = RaspberryPi1.DB()
             
@@ -18,11 +23,11 @@ class TestDatabaseCommands(unittest.TestCase):
             testdb.create_table(conn)
             
             p = testdb.parsejson()
-            print(p)
+           
             testdb.addMessageInfo(p)
-            
+            #gets all messages from database
             r = testdb.getAllMessages(conn)
-            print(r)
+            
             q = [("jsonTest",0,5)]
             self.assertEqual(r,q)
             
@@ -36,6 +41,10 @@ class TestDatabaseCommands(unittest.TestCase):
                 print("\nConnection Close")
         
     def test_getNotSent(self):
+        """test_getNotSent tests if messages are properly creating a not sent list from the database
+        :param self: Instance of class
+        :return: If method works or not
+        """
         try:
             testdb = RaspberryPi1.DB()
             
@@ -44,7 +53,7 @@ class TestDatabaseCommands(unittest.TestCase):
             testdb.create_table(conn)
             testdb.addMessageInfo(('test',0,0))
             p= testdb.getNotSent(conn)
-            print(p)
+            
             r = [("test",0,0)]
             
             self.assertEqual(p,r)
@@ -60,6 +69,10 @@ class TestDatabaseCommands(unittest.TestCase):
                 
     
     def test_UpdateSentStatus(self):
+        """test_UpdateSentStatus tests if messages are updated properly to the database
+        :param self: Instance of class
+        :return: If method works or not
+        """
         try:
             testdb = RaspberryPi1.DB()
             
@@ -72,15 +85,15 @@ class TestDatabaseCommands(unittest.TestCase):
             testdb.addMessageInfo(('test',0,1))
             
             r = testdb.getAllMessages(conn)
-            print(r)
+            
             
             testdb.updateSentStatus(conn,0)
             
             p = testdb.getSentList(conn)
-            print(p)
+            
             
             a = testdb.getNotSent(conn)
-            print(a)
+            
             
             self.assertEqual(p,([('test',1,0)]))
             
@@ -97,20 +110,25 @@ class TestDatabaseCommands(unittest.TestCase):
        
                     
     def test_parseText(self):
+        """test_parseText tests if messages are being converted into
+         proper braille format
+        :param self: Instance of class
+        :return: If method works or not
+        """
+
         try:
             testdb = RaspberryPi1.DB()
             
             val = testdb.parseText('test')
-            print(val)
+            
             
             val1 = testdb.parseText('123')
-            print(val1)
+          
             
             val2 = testdb.parseText('test123')
-            print(val2)
+            
             
             val3 = testdb.parseText('test123test')
-            print(val3)
             
             self.assertEqual(val,(['t', 'e', 's', 't']))
             self.assertEqual(val1,(['#', 'a', 'b', 'c']))
@@ -123,7 +141,7 @@ class TestDatabaseCommands(unittest.TestCase):
         finally:
                 print("\n Conversion Done")
             
-   
+#Used to run the code
 if __name__ == '__main__':
     unittest.main()        
 
