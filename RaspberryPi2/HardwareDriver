@@ -1,5 +1,6 @@
-import serial
-import time
+#Initial hardware driver code Python changed to Java
+import serial #import the serial communication 
+import time #import the time
 ser = serial.Serial("COM5", 9600) #Set serial connection port to that of the Arduino
 time.sleep(1)
 s = ser.read() # Read from Arduino and store byte in variable s
