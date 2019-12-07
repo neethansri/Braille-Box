@@ -1,4 +1,4 @@
-const int buttonPin1 = 4; 
+const int buttonPin1 = 4; //Set Arduino pins using constant integer variable
 const int buttonPin2 = 7;
 const int solenoidPIN1 = 12;
 const int solenoidPIN2 = 8;
@@ -6,16 +6,16 @@ const int solenoidPIN3 = 2;
 const int solenoidPIN4 = 13;
 const int solenoidPIN5 = 11;
 const int solenoidPIN6 = 9;
-int buttonstate1 = 0; 
+int buttonstate1 = 0; //Initalize buttonstate to zero 
 int buttonstate2 = 0;
-String rx_str = "";
-int result;
-int flag = 0;
+String rx_str = ""; //Intialize String for serial port read
+int result; //Declare int result
+String flag = "0"; //Declare and intialize flag to "0"
 
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(buttonPin1, INPUT);
+  pinMode(buttonPin1, INPUT); //Initialize input and output for Arduino pins
   pinMode(buttonPin2, INPUT);
   pinMode(solenoidPIN1, OUTPUT);
   pinMode(solenoidPIN2, OUTPUT);
@@ -23,24 +23,24 @@ void setup() {
   pinMode(solenoidPIN4, OUTPUT);
   pinMode(solenoidPIN5, OUTPUT);
   pinMode(solenoidPIN6, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(9600); //Begin serial port Arduino to pi connection 
 
 }
 
 void loop(){
-  buttonstate1 = digitalRead(buttonPin1);
+  buttonstate1 = digitalRead(buttonPin1); //Read input value from button presses
   buttonstate2 = digitalRead(buttonPin2);
 
-  if (buttonstate1 == HIGH) {
+  if (buttonstate1 == HIGH) {//If the button state is high set the flag to 1
       flag = "1";
-      //Serial.println("1");
+      
     }
-  if (buttonstate2 == HIGH) {
+  if (buttonstate2 == HIGH) {//If the button state is high set the flag to 0
       flag = "0";
-      //Serial.println("0");
+      
   }
-  Serial.println(flag);
-  if (buttonstate2 == HIGH) {
+  Serial.println(flag);//Send the value if the flag to the pi through the serial port
+  if (buttonstate2 == HIGH) {//If the button 2 state is high turn off all solenoids and set the flag to 0
     digitalWrite(solenoidPIN1, LOW);
     digitalWrite(solenoidPIN2, LOW);
     digitalWrite(solenoidPIN3, LOW);
@@ -51,17 +51,18 @@ void loop(){
 
   }
   
-  while (Serial.available()) {
-    rx_str = Serial.readString();
+  while (Serial.available()) {//Check to see if serial communication is available and loop continously if available
+    rx_str = Serial.readString();//Read the 6 bit string send from the pi to the Arduino in the serial port
     }
-    char num1 = rx_str.charAt(0);
+    char num1 = rx_str.charAt(0);//Split every character within the 6 bit string and store into num characters
     char num2 = rx_str.charAt(1);
     char num3 = rx_str.charAt(2);
     char num4 = rx_str.charAt(3);
     char num5 = rx_str.charAt(4);
     char num6 = rx_str.charAt(5);
-    buttonstate2 = digitalRead(buttonPin2);
-    if (num1 == '1') {
+    buttonstate2 = digitalRead(buttonPin2);//Read button 2 state
+    
+    if (num1 == '1') {//Check every num value and if 1 push solenoids, if 0 keep solenoids off
       digitalWrite(solenoidPIN2, HIGH);
     } else {
       digitalWrite(solenoidPIN2, LOW);
@@ -92,10 +93,10 @@ void loop(){
       digitalWrite(solenoidPIN6, LOW);
     }
   
-  if (buttonstate2 == HIGH) {
-      flag = "0";
-      //Serial.println("0");
+  if (buttonstate2 == HIGH) {//Check if the state of button 2 is high
+      flag = "0";//Set flag to 0
+     
   }
 }
-}
+
 
