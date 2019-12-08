@@ -9,3 +9,7 @@ If you made your own directory, then just simply copy the BrailleBox folder in t
 The other folder is called Receiver. This folder contains the Receiver Java file and class. When this receiver code runs with the appropriate port number that is inputted into the app. A communication between the app and the machine running the receiver code is established.
 
 Those are the two main things needed to communicate between the android app and the machine using the receiver script. 
+
+Scripts for android app can be found in "\Braille_Box\Android\BrailleBox\app\src\main\java\com\example\braillebox\"
+
+Script for the receiver code can be found in "Braille_Box\Android\Receiver\"
