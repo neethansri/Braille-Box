@@ -7,7 +7,9 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ * @author Issa
+ */
 public class MessageSender extends AsyncTask<ArrayList,Void,Void> {
     /*
      * @param voids The parameters of the task.

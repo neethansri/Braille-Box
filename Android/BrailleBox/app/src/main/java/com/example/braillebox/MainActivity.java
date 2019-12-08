@@ -22,7 +22,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ * @author Issa
+ */
 public class MainActivity extends AppCompatActivity {
 
     EditText firstname, lastname, messagesent, ip, port;

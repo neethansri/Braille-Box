@@ -9,7 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import org.json.simple.JSONObject;
 
-
+/**
+ * @author Issa
+ */
 public class Receiver {
 	
 	static Socket socket;
